@@ -37,8 +37,6 @@ Game.Load.prototype = {
 		this.preloadtext.anchor.setTo(0.5,0.5);
 		var asset_dir = 'images';
 		this.load.spritesheet('play', asset_dir + '/play.png',100,80);
-		this.load.image('pause', asset_dir + '/Pause.png');
-		this.load.image('reset', asset_dir + '/refresh.png');
 		this.load.image('lose', asset_dir + '/lose.png');
 		this.load.image('arrow', asset_dir + '/arrow.png');
 		this.load.image('win', asset_dir + '/win.png');
@@ -56,100 +54,50 @@ Game.Load.prototype = {
 Game.PlayGame.prototype = {
 
 	create : function(){
-
+		
 		this.bck = this.game.add.sprite(0,0,'bck');
-
 		this.game.world.bounds.x = 21;
-
 		this.game.world.bounds.y = 0;
-
 		this.game.world.bounds.width = gamePlayWidth;
-
 		this.game.world.bounds.height = gamePlayHeight;
 
+		this.game.blockGroup = this.game.add.group();
 		this.focusblock = new Block(this.game,this.game.world.centerX,-40,this.chooseblock(),this.choosecolor(),1);
-
 		this.nextblocktype = this.chooseblock();
-
 		this.nextblockcolor = this.choosecolor();
-
 		this.nextblock = new Block(this.game, 330, 271,this.nextblocktype,this.nextblockcolor,0.7);
-
 		this.question = new Question(this.game);
 
-
-
 		KEYRIGHT = this.game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-
 		KEYLEFT = this.game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
-
 		KEYUP = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
-
 		KEYDOWN = this.game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
 
-		
-
 		this.scoretext = this.add.text(344,355,"SCORE",{ font: "15px Arial", fill: "#ff0044", align: "center" });
-
 		this.scoretext.anchor.setTo(0.5,0.5);
-
 		this.scoretextmain = this.add.text(344,370," "+score+" ",{ font: "25px Arial", fill: "#000", align: "center" })
 
-		
-
-		this.resetbutton = this.add.sprite(320,520,'reset');
-
-		this.pausebutton = this.add.sprite(320,460,'pause');
-
-		this.pausebutton.inputEnabled = true;
-
-		this.resetbutton.inputEnabled = true;
-
-		this.pausebutton.events.onInputDown.add(this.pausebuttondown,this.pausebutton);
-
-		this.resetbutton.events.onInputDown.add(this.resetbuttondown,this.resetbutton);
-
-
-
 		oldsquares.length = 0;
-
 		squaresinrow.length = 0;
-
 		score = 0;
+		this.force_down_max_time = force_down_max_time;
 
-		
-
+		this.disable();
 	},
 
 	pausebuttondown : function(){
-
-		if(this.game.paused==false)
-
-		{
-
+		if ( this.game.paused == false ) {
 			this.game.paused = true;
-
-		} 
-
-		else
-
-		{ this.game.paused = false;
-
+		} else { 
+			this.game.paused = false;
 		}
-
 	},
-
-
 
 	resetbuttondown : function(){
 
 		this.game.state.start('MainMenu');
 
 	},
-
-
-
-
 
 	chooseblock : function(){
 
@@ -175,15 +123,11 @@ Game.PlayGame.prototype = {
 
 	},
 
-
-
 	choosecolor : function(){
 
 		return Math.floor(Math.random()*5);
 
 	},
-
-
 
 	checkcompletedlines : function(){
 
@@ -259,104 +203,97 @@ Game.PlayGame.prototype = {
 
 	},
 
-
-
 	update : function(){
-
-		if(this.game.time.now>force_down)
-
-		{
-
-			if(this.focusblock.wallcollide(oldsquares,'down')!=true)	this.focusblock.move('down');
-
-			else{
-
-				for(var i=0;i<4;i++){
-
+		if ( this.game.time.now > force_down ) {
+			if ( this.focusblock.wallcollide( oldsquares,'down' ) != true ) {
+				this.focusblock.move('down');
+			} else {
+				for ( var i=0 ; i<4 ; i++ ) {
 					oldsquares.push(this.focusblock.squares[i]);
-
 				}
-
 				this.focusblock = new Block(this.game,this.game.world.centerX,-40,this.nextblocktype,this.nextblockcolor,1);
-
 				this.nextblocktype = this.chooseblock();
-
 				this.nextblockcolor = this.choosecolor();
-
-				for(var i=0;i<4;i++){
-
+				for ( var i=0 ; i<4 ; i++ ) {
 					this.nextblock.squares[i].destroy();
-
 				}
 
 				this.nextblock = new Block(this.game, 330, 271,this.nextblocktype,this.nextblockcolor,0.7);
-
-				if(this.focusblock.wallcollide(oldsquares,'down')==true) { this.game.state.start('Lose');}
-
+				if ( this.focusblock.wallcollide( oldsquares,'down' ) == true ) {
+					this.game.state.start('Lose');
+				}
 			}
 
 			this.checkcompletedlines();
 
 			this.scoretextmain.setText(score);
 
-			if(score>1900){ this.game.state.start('Win');
-
+			if ( score>1900 ) { 
+				this.game.state.start('Win');
 			}
 
-			force_down = this.game.time.now + force_down_max_time;
+			force_down = this.game.time.now + this.force_down_max_time;
 
 		}
+		if ( ! this.disableStatus ) {
+			if ( KEYRIGHT.isDown ){
 
-		if(KEYRIGHT.isDown){
+				if(this.game.time.now>change_rot_time){
 
-			if(this.game.time.now>change_rot_time){
-
-			if(this.focusblock.wallcollide(oldsquares,'right')!=true)	this.focusblock.move('right');
-
-			change_rot_time = this.game.time.now + 100;
-
-			}
-
-		}
-
-		if(KEYLEFT.isDown){
-
-			if(this.game.time.now>change_rot_time){
-
-			if(this.focusblock.wallcollide(oldsquares,'left')!=true)	this.focusblock.move('left');
-
-			change_rot_time = this.game.time.now + 100;
-
-			}
-
-		}
-
-		if(KEYUP.isDown){
-
-			if(this.game.time.now>change_rot_time){
-
-				if(this.focusblock.rotatecollide(oldsquares)!=true)		this.focusblock.rotate(); 
+				if(this.focusblock.wallcollide(oldsquares,'right')!=true)	this.focusblock.move('right');
 
 				change_rot_time = this.game.time.now + 100;
 
+				}
+
 			}
 
+			if ( KEYLEFT.isDown ){
+
+				if(this.game.time.now>change_rot_time){
+
+				if(this.focusblock.wallcollide(oldsquares,'left')!=true)	this.focusblock.move('left');
+
+				change_rot_time = this.game.time.now + 100;
+
+				}
+
+			}
+
+			if ( KEYUP.isDown ){
+				if ( this.game.time.now > change_rot_time ){
+					if ( this.focusblock.rotatecollide(oldsquares) != true) {
+						this.focusblock.rotate(); 
+					}
+					change_rot_time = this.game.time.now + 100;
+				}
+
+			}
+
+			if ( KEYDOWN.isDown ){
+				this.force_down_max_time = force_down_max_time / 10;
+			} else {
+				this.force_down_max_time = force_down_max_time;
+			}
 		}
 
-		if(KEYDOWN.isDown){
 
-			force_down_max_time = 50;
 
+	},
+
+	disable: function( enable ) {
+		if ( typeof enable !== 'undefined' && enable ) {
+			this.disableStatus = false;
+		} else {
+			var md = this.game.width / 2;
+			this.disableOverlay = new Phaser.Graphics( this.game, 0 , 0 );
+			this.disableOverlay.beginFill( 0x000000, 0.7 ); //black, 0.7 transparency
+			this.disableOverlay.drawRect( 0, 0, md, this.game.height );
+			this.disableOverlay.endFill();
+			this.disableOverlay = this.game.add.image( 0, 0, this.disableOverlay.generateTexture() );
+			this.disableOverlay.bringToTop();
+			this.disableStatus = true;
 		}
-
-		else {
-
-			force_down_max_time = 500;
-
-		}
-
-
-
 	}
 
 };
@@ -520,86 +457,56 @@ Block.prototype = {
 
 		switch(this.blocktype){
 
-			case 'o' : 	this.squares[0] = this.game.add.sprite(this.centerX-md,this.centerY-md,'blocks',this.blockcolor);
+			case 'o' :
+				this.squares[0] = this.game.add.sprite(this.centerX-md,this.centerY-md,'blocks',this.blockcolor);
+				this.squares[1] = this.game.add.sprite(this.centerX-md,this.centerY+md,'blocks',this.blockcolor);
+				this.squares[2] = this.game.add.sprite(this.centerX+md,this.centerY+md,'blocks',this.blockcolor);
+				this.squares[3] = this.game.add.sprite(this.centerX+md,this.centerY-md,'blocks',this.blockcolor);
+				break;
+			case 't' :
+				this.squares[0] = this.game.add.sprite(this.centerX+md,this.centerY-md,'blocks',this.blockcolor);
+				this.squares[1] = this.game.add.sprite(this.centerX+md,this.centerY+md,'blocks',this.blockcolor);
+				this.squares[2] = this.game.add.sprite(this.centerX-md,this.centerY+md,'blocks',this.blockcolor);
+				this.squares[3] = this.game.add.sprite(this.centerX+md*3,this.centerY+md,'blocks',this.blockcolor);
+				break;
 
-						this.squares[1] = this.game.add.sprite(this.centerX-md,this.centerY+md,'blocks',this.blockcolor);
-
-						this.squares[2] = this.game.add.sprite(this.centerX+md,this.centerY+md,'blocks',this.blockcolor);
-
-						this.squares[3] = this.game.add.sprite(this.centerX+md,this.centerY-md,'blocks',this.blockcolor);
-
-						break;
-
-			case 't' : 	this.squares[0] = this.game.add.sprite(this.centerX+md,this.centerY-md,'blocks',this.blockcolor);
-
-						this.squares[1] = this.game.add.sprite(this.centerX+md,this.centerY+md,'blocks',this.blockcolor);
-
-						this.squares[2] = this.game.add.sprite(this.centerX-md,this.centerY+md,'blocks',this.blockcolor);
-
-						this.squares[3] = this.game.add.sprite(this.centerX+md*3,this.centerY+md,'blocks',this.blockcolor);
-
-						break;
-
-			case 'l' : 	this.squares[0] = this.game.add.sprite(this.centerX-md,this.centerY-md,'blocks',this.blockcolor);
-
-						this.squares[1] = this.game.add.sprite(this.centerX-md,this.centerY+md,'blocks',this.blockcolor);
-
-						this.squares[2] = this.game.add.sprite(this.centerX-md,this.centerY+md*3,'blocks',this.blockcolor);
-
-						this.squares[3] = this.game.add.sprite(this.centerX+md,this.centerY+md*3,'blocks',this.blockcolor);
-
-						break;
-
-			case 'j' : 	this.squares[0] = this.game.add.sprite(this.centerX+md,this.centerY-md,'blocks',this.blockcolor);
-
-						this.squares[1] = this.game.add.sprite(this.centerX+md,this.centerY+md,'blocks',this.blockcolor);
-
-						this.squares[2] = this.game.add.sprite(this.centerX+md,this.centerY+md*3,'blocks',this.blockcolor);
-
-						this.squares[3] = this.game.add.sprite(this.centerX-md,this.centerY+md*3,'blocks',this.blockcolor);
-
-						break;
-
-			case 'i' :  this.squares[0] = this.game.add.sprite(this.centerX+md,this.centerY-md*3,'blocks',this.blockcolor);
-
-						this.squares[1] = this.game.add.sprite(this.centerX+md,this.centerY-md,'blocks',this.blockcolor);
-
-						this.squares[2] = this.game.add.sprite(this.centerX+md,this.centerY+md,'blocks',this.blockcolor);
-
-						this.squares[3] = this.game.add.sprite(this.centerX+md,this.centerY+md*3,'blocks',this.blockcolor);
-
-						break;
-
-			case 's' :  this.squares[0] = this.game.add.sprite(this.centerX+md*3,this.centerY-md,'blocks',this.blockcolor);
-
-						this.squares[1] = this.game.add.sprite(this.centerX+md,this.centerY-md,'blocks',this.blockcolor);
-
-						this.squares[2] = this.game.add.sprite(this.centerX+md,this.centerY+md,'blocks',this.blockcolor);
-
-						this.squares[3] = this.game.add.sprite(this.centerX-md,this.centerY+md,'blocks',this.blockcolor);
-
-						break;
-
-			case 'z' :  this.squares[0] = this.game.add.sprite(this.centerX-md,this.centerY-md,'blocks',this.blockcolor);
-
-						this.squares[1] = this.game.add.sprite(this.centerX+md,this.centerY-md,'blocks',this.blockcolor);
-
-						this.squares[2] = this.game.add.sprite(this.centerX+md,this.centerY+md,'blocks',this.blockcolor);
-
-						this.squares[3] = this.game.add.sprite(this.centerX+md*3,this.centerY+md,'blocks',this.blockcolor);
-
-						break;
-
+			case 'l' : 
+				this.squares[0] = this.game.add.sprite(this.centerX-md,this.centerY-md,'blocks',this.blockcolor);
+				this.squares[1] = this.game.add.sprite(this.centerX-md,this.centerY+md,'blocks',this.blockcolor);
+				this.squares[2] = this.game.add.sprite(this.centerX-md,this.centerY+md*3,'blocks',this.blockcolor);
+				this.squares[3] = this.game.add.sprite(this.centerX+md,this.centerY+md*3,'blocks',this.blockcolor);
+				break;
+			case 'j' :
+				this.squares[0] = this.game.add.sprite(this.centerX+md,this.centerY-md,'blocks',this.blockcolor);
+				this.squares[1] = this.game.add.sprite(this.centerX+md,this.centerY+md,'blocks',this.blockcolor);
+				this.squares[2] = this.game.add.sprite(this.centerX+md,this.centerY+md*3,'blocks',this.blockcolor);
+				this.squares[3] = this.game.add.sprite(this.centerX-md,this.centerY+md*3,'blocks',this.blockcolor);
+				break;
+			case 'i' :
+				this.squares[0] = this.game.add.sprite(this.centerX+md,this.centerY-md*3,'blocks',this.blockcolor);
+				this.squares[1] = this.game.add.sprite(this.centerX+md,this.centerY-md,'blocks',this.blockcolor);
+				this.squares[2] = this.game.add.sprite(this.centerX+md,this.centerY+md,'blocks',this.blockcolor);
+				this.squares[3] = this.game.add.sprite(this.centerX+md,this.centerY+md*3,'blocks',this.blockcolor);
+				break;
+			case 's' :
+				this.squares[0] = this.game.add.sprite(this.centerX+md*3,this.centerY-md,'blocks',this.blockcolor);
+				this.squares[1] = this.game.add.sprite(this.centerX+md,this.centerY-md,'blocks',this.blockcolor);
+				this.squares[2] = this.game.add.sprite(this.centerX+md,this.centerY+md,'blocks',this.blockcolor);
+				this.squares[3] = this.game.add.sprite(this.centerX-md,this.centerY+md,'blocks',this.blockcolor);
+				break;
+			case 'z' :
+				this.squares[0] = this.game.add.sprite(this.centerX-md,this.centerY-md,'blocks',this.blockcolor);
+				this.squares[1] = this.game.add.sprite(this.centerX+md,this.centerY-md,'blocks',this.blockcolor);
+				this.squares[2] = this.game.add.sprite(this.centerX+md,this.centerY+md,'blocks',this.blockcolor);
+				this.squares[3] = this.game.add.sprite(this.centerX+md*3,this.centerY+md,'blocks',this.blockcolor);
+				break;
 		}
 
-		for(var i=0;i<this.squares.length;i++){
-
-		this.squares[i].anchor.setTo(0.5,0.5);
-
-		this.squares[i].scale.setTo(this.scale,this.scale)
-
-		this.squares[i].collideWorldBounds = true;
-
+		for ( var i=0;i<this.squares.length;i++ ){
+			this.squares[i].anchor.setTo(0.5,0.5);
+			this.squares[i].scale.setTo(this.scale,this.scale)
+			this.squares[i].collideWorldBounds = true;
+			this.game.blockGroup.add( this.squares[i] );
 		}	
 
 	},
@@ -607,39 +514,25 @@ Block.prototype = {
 
 
 	move : function(dir){
-
 		switch(dir){
-
-			case 'left' : 	this.centerX -= blockWidth;
-
-							for(var i=0;i<this.squares.length;i++){
-
-								this.squares[i].x -= blockWidth;
-
-							}
-
-							break;
-
-			case 'right' : 	this.centerX += blockWidth;
-
-							for(var i=0;i<this.squares.length;i++){
-
-								this.squares[i].x += blockWidth;
-
-							}
-
-							break;
-
-			case 'down' : 	this.centerY += blockHeight;
-
-							for(var i=0;i<this.squares.length;i++){
-
-								this.squares[i].y += blockHeight;
-
-							}
-
-							break;
-
+			case 'left' :
+			this.centerX -= blockWidth;
+			for(var i=0;i<this.squares.length;i++){
+				this.squares[i].x -= blockWidth;
+			}
+			break;
+			case 'right' :
+				this.centerX += blockWidth;
+				for(var i=0;i<this.squares.length;i++){
+					this.squares[i].x += blockWidth;
+				}
+				break;
+			case 'down' :
+				this.centerY += blockHeight;
+				for(var i=0;i<this.squares.length;i++){
+					this.squares[i].y += blockHeight;
+				}
+				break;
 		}
 
 
@@ -893,13 +786,28 @@ Question = function( game, category ){
 Question.prototype = {
 	setupQuestion: function() {
 		var category = randomProperty( questions, true ); //Random Category
-		var question = randomProperty( questions[category] ); //Random Question
+		var question = randomProperty( questions[ category ] ); //Random Question
 		var question_title = question.question;
 		var answers = question.answers;
 		var question_title_style = { font: "24px Arial", fill: "#000", align: "left" };
 		var answers_style = { font: "16px Arial", fill: "#000", align: "left" };
 		this.game.add.text( 420, 20, question_title, question_title_style );
-		this.game.add.text( 420, 50, answers.join(), answers_style );
+		var answerLoc = 60;
+		for ( i in answers ) {
+			var answer = this.game.add.text( 420, answerLoc, answers[ i ][ 'value' ], answers_style );
+			answer.inputEnabled = true;
+			//Event for answer click
+			answer.events.onInputDown.add( this.answerClick, { 'game': this.game, 'answer': answers[ i ] } );
+			answer.input.useHandCursor = true;
+			answerLoc += 40;
+		}
+	},
+	answerClick: function() {
+		if ( typeof this.answer.correct !== 'undefined' ) {
+			alert('YOU ARE RIGHT');
+		} else {
+			alert('YOU ARE WRONG')
+		}
 	}
 };
 
