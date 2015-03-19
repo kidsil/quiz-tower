@@ -1,18 +1,16 @@
 /*var defaultSettings = {
 	'oldsquares': new Array(),
 	'squaresinrow': new Array(),
-	'change_rot_time': 0,
+	'changeRotTime': 0,
 	'force_down': 0,
-	'slide_time': 
 }
 TODO: complete this defaultSettings thing... put all width/height/x/y/score/..... there
 
 */
 var oldsquares = new Array();
 var squaresinrow = new Array();
-var change_rot_time = 0;
-var slide_time = 0;
-var force_down_max_time = 1;
+var changeRotTime = 0;
+var forceDownMaxTime = 1;
 var blockHeight = 30;
 var blockWidth = 30;
 var gamePlayWidth = 280;
@@ -35,13 +33,13 @@ Game.Load.prototype = {
 		this.stage.backgroundColor = "#EFEFEF";
 		this.preloadtext = this.add.text(this.game.world.centerX,this.game.world.centerY,"Loading..."+this.load.progress+"%",{ font: "20px Arial", fill: "#ff0044", align: "center" });
 		this.preloadtext.anchor.setTo(0.5,0.5);
-		var asset_dir = 'images';
-		this.load.spritesheet('play', asset_dir + '/play.png',100,80);
-		this.load.image('lose', asset_dir + '/lose.png');
-		this.load.image('arrow', asset_dir + '/arrow.png');
-		this.load.image('win', asset_dir + '/win.png');
-		this.load.spritesheet('blocks', asset_dir + '/blocks.png',30,30);
-		this.load.image('bck', asset_dir + '/Bck.png');
+		var assetDir = 'images';
+		this.load.spritesheet('play', assetDir + '/play.png',100,80);
+		this.load.image('lose', assetDir + '/lose.png');
+		this.load.image('arrow', assetDir + '/arrow.png');
+		this.load.image('win', assetDir + '/win.png');
+		this.load.spritesheet('blocks', assetDir + '/blocks.png',30,30);
+		this.load.image('bck', assetDir + '/Bck.png');
 	},
 
 	create : function(){
@@ -82,7 +80,7 @@ Game.PlayGame.prototype = {
 		oldsquares.length = 0;
 		squaresinrow.length = 0;
 		score = 0;
-		this.force_down_max_time = force_down_max_time;
+		this.forceDownMaxTime = forceDownMaxTime;
 		this.next_refresh_time = 0;
 
 		this.disable();
@@ -186,7 +184,7 @@ Game.PlayGame.prototype = {
 					return; //Important!! Question might show up otherwise
 				}
 
-				this.force_down_max_time = force_down_max_time; //Resetting speed
+				this.forceDownMaxTime = forceDownMaxTime; //Resetting speed
 
 				this.question = new Question(this.game); //Generate new question
 				this.disable();
@@ -200,17 +198,17 @@ Game.PlayGame.prototype = {
 				this.game.state.start('Win');
 			}
 
-			this.next_refresh_time = this.game.time.now + this.force_down_max_time;
+			this.next_refresh_time = this.game.time.now + this.forceDownMaxTime;
 
 		}
 		if ( ! this.disableStatus ) {
 			if ( KEYRIGHT.isDown ){
 
-				if(this.game.time.now>change_rot_time){
+				if(this.game.time.now>changeRotTime){
 
 				if(this.focusblock.wallcollide(oldsquares,'right')!=true)	this.focusblock.move('right');
 
-				change_rot_time = this.game.time.now + 100;
+				changeRotTime = this.game.time.now + 100;
 
 				}
 
@@ -218,30 +216,30 @@ Game.PlayGame.prototype = {
 
 			if ( KEYLEFT.isDown ){
 
-				if(this.game.time.now>change_rot_time){
+				if(this.game.time.now>changeRotTime){
 
 				if(this.focusblock.wallcollide(oldsquares,'left')!=true)	this.focusblock.move('left');
 
-				change_rot_time = this.game.time.now + 100;
+				changeRotTime = this.game.time.now + 100;
 
 				}
 
 			}
 
 			if ( KEYUP.isDown ){
-				if ( this.game.time.now > change_rot_time ){
+				if ( this.game.time.now > changeRotTime ){
 					if ( this.focusblock.rotatecollide(oldsquares) != true) {
 						this.focusblock.rotate(); 
 					}
-					change_rot_time = this.game.time.now + 100;
+					changeRotTime = this.game.time.now + 100;
 				}
 
 			}
 
 			if ( KEYDOWN.isDown ){
-				this.force_down_max_time = force_down_max_time / 10;
+				this.forceDownMaxTime = forceDownMaxTime / 10;
 			} else {
-				this.force_down_max_time = force_down_max_time;
+				this.forceDownMaxTime = forceDownMaxTime;
 			}
 		}
 
