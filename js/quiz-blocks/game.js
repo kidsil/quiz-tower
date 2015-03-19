@@ -10,7 +10,7 @@ TODO: complete this defaultSettings thing... put all width/height/x/y/score/....
 var oldsquares = new Array();
 var squaresinrow = new Array();
 var changeRotTime = 0;
-var forceDownMaxTime = 1;
+var forceDownMaxTime = 500;
 var blockHeight = 30;
 var blockWidth = 30;
 var gamePlayWidth = 280;
