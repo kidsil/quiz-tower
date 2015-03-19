@@ -1,4 +1,4 @@
-# quiz-tower
+# Quiz Blocks
 Quiz Blocks
 
 JS Styleguide:
