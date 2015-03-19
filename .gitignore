@@ -1,0 +1,8 @@
+.idea/
+.DS_Store
+/node_modules/*/node-modules/ 
+js/node_modules
+node_modules/*
+js/phaser
+js/quiz-blocks
+js/quiz-tower
