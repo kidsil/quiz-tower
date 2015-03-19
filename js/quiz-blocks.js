@@ -12,11 +12,12 @@ var oldsquares = new Array();
 var squaresinrow = new Array();
 var change_rot_time = 0;
 var slide_time = 0;
-var force_down_max_time = 500;
+var force_down_max_time = 1;
 var blockHeight = 30;
 var blockWidth = 30;
 var gamePlayWidth = 280;
 var gamePlayHeight = 590;
+var winScore = 2000;
 var KEYLEFT;
 var KEYRIGHT;
 var KEYUP;
@@ -31,7 +32,7 @@ Game.Load = function(game){};
 
 Game.Load.prototype = {
 	preload : function(){
-		this.stage.backgroundColor = "#000";
+		this.stage.backgroundColor = "#EFEFEF";
 		this.preloadtext = this.add.text(this.game.world.centerX,this.game.world.centerY,"Loading..."+this.load.progress+"%",{ font: "20px Arial", fill: "#ff0044", align: "center" });
 		this.preloadtext.anchor.setTo(0.5,0.5);
 		var asset_dir = 'images';
@@ -178,7 +179,11 @@ Game.PlayGame.prototype = {
 
 				this.nextblock = new Block(this.game, 330, 271,this.nextblocktype,this.nextblockcolor,0.7);
 				if ( this.focusblock.wallcollide( oldsquares,'down' ) == true ) {
+					if ( typeof this.game.question_title !== 'undefined' && this.game.question_title.visible ) {
+						this.question.hide();
+					}
 					this.game.state.start('Lose');
+					return; //Important!! Question might show up otherwise
 				}
 
 				this.force_down_max_time = force_down_max_time; //Resetting speed
@@ -191,7 +196,7 @@ Game.PlayGame.prototype = {
 
 			this.scoretextmain.setText(score);
 
-			if ( score>1900 ) { 
+			if ( score >= winScore ) { 
 				this.game.state.start('Win');
 			}
 
@@ -240,8 +245,6 @@ Game.PlayGame.prototype = {
 			}
 		}
 
-
-
 	},
 	
 	disable: function( disable ) {
@@ -273,22 +276,15 @@ Game.PlayGame.prototype = {
 };
 
 ;/* Made by Nambiar - Game Dolphin 
-
 Feel free to use and learn from */
 
 Game.MainMenu = function(game){
 
-
-
 };
 
-
-
 Game.MainMenu.prototype = {
-
 	create : function(){
 		this.game.world.bounds.x = 0;
-
 		this.game.world.bounds.y = 0;
 
 		if ( typeof this.game.world.bounds.width == 'undefined' )
@@ -298,109 +294,57 @@ Game.MainMenu.prototype = {
 			this.game.world.bounds.height = typeof gameHeight == 'undefined' ? 600 : gameHeight;
 
 		this.playbutton = this.add.button(this.game.world.centerX, this.game.world.centerY-40,'play',this.playclicked,this,1,0,2);
-
 		this.playbutton.anchor.setTo(0.5,0.5);
-
 		this.tweenplay = this.game.add.tween(this.playbutton).to({y:300},1000,Phaser.Easing.Sinusoidal.InOut,true,0,100,true);
 
-
-
 		this.arrows = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY+180,'arrow');
-
 		this.arrows.anchor.setTo(0.5,0.5);
-
 		this.arrows.scale.setTo(0.6,0.6);
-
 	},
-
-
 
 	playclicked : function() {
 		score = 0;
 		this.game.state.start('Game');
 	},
 };
-
-
-
-
 
 Game.LoseScreen = function(game){
-
-
-
 };
 
-
-
 Game.LoseScreen.prototype = {
-
 	create : function(){
-
-		this.lose = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY,'lose');
-
+		this.lose = this.game.add.sprite(this.game.width / 2,this.game.height / 2,'lose');
 		this.lose.anchor.setTo(0.5,0.5);
-
-		this.playbutton = this.add.button(this.game.world.centerX, 40, 'play',this.playclicked,this,1,0,2);
-
+		this.playbutton = this.add.button(this.game.width / 2, 40, 'play',this.playclicked,this,1,0,2);
 		this.playbutton.anchor.setTo(0.5,0.5);
-
-		this.tweenplay = this.game.add.tween(this.playbutton).to({y:50},1000,Phaser.Easing.Sinusoidal.InOut,true,0,100,true);
-
-		this.scoretextmain = this.add.text(this.game.world.centerX,450,score,{ font: "40px Arial", fill: "#fff", align: "center" })
-
+		this.tweenplay = this.game.add.tween( this.playbutton ).to( { y:this.playbutton.y + 10 }, 1000, Phaser.Easing.Sinusoidal.InOut, true, 0, 100, true );
+		this.scoretextmain = this.add.text(this.game.width / 2,420,score.toString(),{ font: "40px Arial", fill: "#000", align: "center" });
 		this.scoretextmain.anchor.setTo(0.5,0.5);
-
-		
-
 	},
 
 	playclicked : function() {
-
 		score = 0;
-
 		this.game.state.start('Game');
-
 	},
-
-
-
 };
-
 
 
 Game.WinScreen = function(game){
 
-
-
 };
 
-
-
 Game.WinScreen.prototype = {
-
 	create : function(){
-
-		this.winimage = this.game.add.sprite(0,0,'win');
-
-		this.playbutton = this.add.button(this.game.world.centerX, 500, 'play',this.playclicked,this,1,0,2);
-
+		this.winimage = this.game.add.sprite(this.game.width / 2,this.game.height / 2,'win');
+		this.winimage.anchor.setTo(0.5,0.5);
+		this.playbutton = this.add.button(this.game.width / 2, 40, 'play',this.playclicked,this,1,0,2);
 		this.playbutton.anchor.setTo(0.5,0.5);
-
-		this.tweenplay = this.game.add.tween(this.playbutton).to({y:550},1000,Phaser.Easing.Sinusoidal.InOut,true,0,100,true);
-
-		
-
+		this.tweenplay = this.game.add.tween(this.playbutton).to({y:this.playbutton.y + 10},1000,Phaser.Easing.Sinusoidal.InOut,true,0,100,true);
 	},
-
 	playclicked : function() {
-
 		score = 0;
-
 		this.game.state.start('Game');
-
 	},
-
 };;Block = function(game,x,y,type,color,scale){
 	this.centerX = x;
 	this.centerY = y;
@@ -715,6 +659,14 @@ Question.prototype = {
 				currentState.overlay_text.setText( currentState.default_overlay_text );
 			}, 1000 );
 		}
+	},
+	hide: function( visible ) {
+		if ( typeof visible == 'undefined' )
+			visible = false;
+		this.game.question_title.visible = visible;
+		for ( i in this.game.answers ) {
+			this.game.answers[ i ].visible = visible;
+		}
 	}
 };
 
@@ -730,18 +682,11 @@ function randomProperty( obj, returnPropertyName ) {
 	var gameWidth = 800;
 	var gameHeight = 600;
 
-
-	var gamevar = new Phaser.Game( gameWidth, gameHeight, Phaser.AUTO, 'container' );
-
+	gamevar = new Phaser.Game( gameWidth, gameHeight, Phaser.AUTO, 'container' );
 	gamevar.state.add('Load',Game.Load);
-
 	gamevar.state.add('MainMenu',Game.MainMenu);
-
 	gamevar.state.add('Game',Game.PlayGame);
-
 	gamevar.state.add('Lose',Game.LoseScreen);
-
 	gamevar.state.add('Win',Game.WinScreen);
-
 	gamevar.state.start('Load');
 }

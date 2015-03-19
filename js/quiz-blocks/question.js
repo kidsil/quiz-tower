@@ -57,6 +57,14 @@ Question.prototype = {
 				currentState.overlay_text.setText( currentState.default_overlay_text );
 			}, 1000 );
 		}
+	},
+	hide: function( visible ) {
+		if ( typeof visible == 'undefined' )
+			visible = false;
+		this.game.question_title.visible = visible;
+		for ( i in this.game.answers ) {
+			this.game.answers[ i ].visible = visible;
+		}
 	}
 };
 

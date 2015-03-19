@@ -12,11 +12,12 @@ var oldsquares = new Array();
 var squaresinrow = new Array();
 var change_rot_time = 0;
 var slide_time = 0;
-var force_down_max_time = 500;
+var force_down_max_time = 1;
 var blockHeight = 30;
 var blockWidth = 30;
 var gamePlayWidth = 280;
 var gamePlayHeight = 590;
+var winScore = 2000;
 var KEYLEFT;
 var KEYRIGHT;
 var KEYUP;
@@ -31,7 +32,7 @@ Game.Load = function(game){};
 
 Game.Load.prototype = {
 	preload : function(){
-		this.stage.backgroundColor = "#000";
+		this.stage.backgroundColor = "#EFEFEF";
 		this.preloadtext = this.add.text(this.game.world.centerX,this.game.world.centerY,"Loading..."+this.load.progress+"%",{ font: "20px Arial", fill: "#ff0044", align: "center" });
 		this.preloadtext.anchor.setTo(0.5,0.5);
 		var asset_dir = 'images';
@@ -178,7 +179,11 @@ Game.PlayGame.prototype = {
 
 				this.nextblock = new Block(this.game, 330, 271,this.nextblocktype,this.nextblockcolor,0.7);
 				if ( this.focusblock.wallcollide( oldsquares,'down' ) == true ) {
+					if ( typeof this.game.question_title !== 'undefined' && this.game.question_title.visible ) {
+						this.question.hide();
+					}
 					this.game.state.start('Lose');
+					return; //Important!! Question might show up otherwise
 				}
 
 				this.force_down_max_time = force_down_max_time; //Resetting speed
@@ -191,7 +196,7 @@ Game.PlayGame.prototype = {
 
 			this.scoretextmain.setText(score);
 
-			if ( score>1900 ) { 
+			if ( score >= winScore ) { 
 				this.game.state.start('Win');
 			}
 
@@ -239,8 +244,6 @@ Game.PlayGame.prototype = {
 				this.force_down_max_time = force_down_max_time;
 			}
 		}
-
-
 
 	},
 	
