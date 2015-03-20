@@ -621,7 +621,7 @@ Question.prototype = {
 		var question = randomProperty( questions[ category ] ); //Random Question
 		var question_title = question.question;
 		var answers = question.answers;
-		var question_title_style = { font: "24px Arial", fill: "#000", align: "left" };
+		var question_title_style = { font: "24px Arial", fill: "#000", align: "left", wordWrap: true, wordWrapWidth: 300 };
 		var answers_style = { font: "16px Arial", fill: "#000", align: "left" };
 		if ( typeof this.game.question_title == 'undefined' || this.game.question_title.game === null ) {
 			this.game.question_title = this.game.add.text( 420, 20, question_title, question_title_style );
@@ -629,7 +629,7 @@ Question.prototype = {
 			this.game.question_title.setText( question_title );
 		}
 		
-		var answerLoc = 60;
+		var answerLoc = 100;
 		if ( typeof this.game.answers == 'undefined' )
 			this.game.answers = {};
 
