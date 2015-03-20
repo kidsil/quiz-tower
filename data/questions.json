@@ -3,17 +3,46 @@
 		{
 			"question": "How many grams are in a KG ?",
 			"answers": [
-				{ "value": "100" },
-				{ "value": "1000", "correct": true },
-				{ "value": "10000" }
+				{
+					"value": "100"
+				},
+				{
+					"value": "1000",
+					"correct": true
+				},
+				{
+					"value": "10000"
+				}
 			]
 		},
 		{
 			"question": "How much is 2+2?",
 			"answers": [
-				{ "value": "4", "correct": true },
-				{ "value": "5" },
-				{ "value": "6" }
+				{
+					"value": "4",
+					"correct": true
+				},
+				{
+					"value": "5"
+				},
+				{
+					"value": "6"
+				}
+			]
+		},
+		{
+			"question": "How many Kilometers in a Mile?",
+			"answers": [
+				{
+					"value": "2.6"
+				},
+				{
+					"value": "10"
+				},
+				{
+					"value": "1.6",
+					"correct": true
+				}
 			]
 		}
 	],
@@ -21,17 +50,78 @@
 		{
 			"question": "What's the capital of Germany?",
 			"answers": [
-				{ "value": "Berlin", "correct": true },
-				{ "value": "Munich" },
-				{ "value": "Frankfurt" }
+				{
+					"value": "Berlin",
+					"correct": true
+				},
+				{
+					"value": "Munich"
+				},
+				{
+					"value": "Frankfurt"
+				}
 			]
 		},
 		{
 			"question": "What's the capital of Ireland?",
 			"answers": [
-				{ "value": "Belfast" },
-				{ "value": "Dublin", "correct": true },
-				{ "value": "Cork" }
+				{
+					"value": "Belfast"
+				},
+				{
+					"value": "Dublin",
+					"correct": true
+				},
+				{
+					"value": "Cork"
+				}
+			]
+		}
+	],
+	"music": [
+		{
+			"question": "What's the most sold Nirvana album?",
+			"answers": [
+				{
+					"value": "Bleach"
+				},
+				{
+					"value": "Nevermind",
+					"correct": true
+				},
+				{
+					"value": "In Utero"
+				}
+			]
+		},
+		{
+			"question": "What's the name of Muse's first album?",
+			"answers": [
+				{
+					"value": "Absolution"
+				},
+				{
+					"value": "Showbiz",
+					"correct": true
+				},
+				{
+					"value": "Origin of Symmetry"
+				}
+			]
+		},
+		{
+			"question": "What's the most sold Radiohead album?",
+			"answers": [
+				{
+					"value": "OK Computer",
+					"correct": true
+				},
+				{
+					"value": "The Bends"
+				},
+				{
+					"value": "In Rainbows"
+				}
 			]
 		}
 	]
